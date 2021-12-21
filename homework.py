@@ -1,4 +1,4 @@
-from typing import Union, Dict, Type
+from typing import Dict, Type
 
 
 class InfoMessage:
@@ -86,6 +86,9 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
+    COEF_CALORIES_1: float = 0.035
+    COEF_CALORIES_2: float = 0.029
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -96,21 +99,21 @@ class SportsWalking(Training):
         super().__init__(action, duration, weight)
         self.height: float = height
 
-    COEF_CALORIES_1: float = 0.035
-    COEF_CALORIES_2: float = 0.029
-
     def get_spent_calories(self) -> float:
 
-        return (self.COEF_CALORIES_1 * self.weight
-                + (self.get_mean_speed() ** 2 // self.height)
-                * self.COEF_CALORIES_2 * self.weight) * self.duration \
-                * self.HOUR_IN_MINUTE
+        avr_speed_squared = self.get_mean_speed() ** 2 // self.height
+        work_time_in_min = self.duration * self.HOUR_IN_MINUTE
+
+        return ((self.COEF_CALORIES_1 * self.weight + avr_speed_squared
+                * self.COEF_CALORIES_2 * self.weight) * work_time_in_min)
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
 
     LEN_STEP: float = 1.38
+    COEF_SWIMM_1: int = 1.1
+    COEF_SWIMM_2: int = 2
 
     def __init__(self,
                  action: int,
@@ -123,9 +126,6 @@ class Swimming(Training):
         self.length_pool: float = length_pool
         self.count_pool: float = count_pool
 
-    COEF_SWIMM_1: int = 1.1
-    COEF_SWIMM_2: int = 2
-
     def get_mean_speed(self) -> float:
         first_arg = self.length_pool * self.count_pool
         return first_arg / self.M_IN_KM / self.duration
@@ -137,30 +137,22 @@ class Swimming(Training):
         return first_arg * self.COEF_SWIMM_2 * self.weight
 
 
-def read_package(workout_type: str, data: list) -> Union[Training, str]:
+def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    CustomDict = Dict[str, Type[Union[Swimming, Running, SportsWalking]]]
+    custom_dict = Dict[str, Type[Training]]
 
-    workout_dict: CustomDict = {'SWM': Swimming,
-                                'RUN': Running,
-                                'WLK': SportsWalking}
+    workout_dict: custom_dict = {'SWM': Swimming,
+                                 'RUN': Running,
+                                 'WLK': SportsWalking}
 
-    try:
-        return workout_dict[workout_type](*data)
-
-    except KeyError:
-        return 'Не найден тип тренировки!'
+    return workout_dict[workout_type](*data)
 
 
-def main(training: Union[Training, str]) -> None:
+def main(training: Training) -> None:
     """Главная функция."""
-
-    if isinstance(training, str):
-        print(training)
-    else:
-        info: InfoMessage = training.show_training_info()
-        print(InfoMessage.get_message(info))
+    info: InfoMessage = training.show_training_info()
+    print(InfoMessage.get_message(info))
 
 
 if __name__ == '__main__':
