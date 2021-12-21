@@ -103,8 +103,8 @@ class SportsWalking(Training):
 
         return (coeff_calories_1
                 * self.weight
-                + (self.get_mean_speed() ** 2
-                // self.height) * coeff_calories_2
+                + (self.get_mean_speed() ** 2 // self.height)
+                * coeff_calories_2
                 * self.weight) * self.duration * self.HOUR_IN_MINUTE
 
 
