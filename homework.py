@@ -96,15 +96,15 @@ class SportsWalking(Training):
         super().__init__(action, duration, weight)
         self.height: float = height
 
+    COEF_CALORIES_1: float = 0.035
+    COEF_CALORIES_2: float = 0.029
+
     def get_spent_calories(self) -> float:
 
-        coeff_calories_1 = 0.035
-        coeff_calories_2 = 0.029
-
-        return (coeff_calories_1
+        return (self.COEF_CALORIES_1
                 * self.weight
                 + (self.get_mean_speed() ** 2 // self.height)
-                * coeff_calories_2
+                * self.COEF_CALORIES_2
                 * self.weight) * self.duration * self.HOUR_IN_MINUTE
 
 
@@ -124,18 +124,18 @@ class Swimming(Training):
         self.length_pool: float = length_pool
         self.count_pool: float = count_pool
 
+    COEF_SWIMM_1: int = 1.1
+    COEF_SWIMM_2: int = 2
+
     def get_mean_speed(self) -> float:
         first_arg = self.length_pool * self.count_pool
         return first_arg / self.M_IN_KM / self.duration
 
     def get_spent_calories(self) -> float:
 
-        coeff_swimm_1 = 1.1
-        coeff_swimm_2 = 2
+        first_arg = self.get_mean_speed() + self.COEF_SWIMM_1
 
-        first_arg = self.get_mean_speed() + coeff_swimm_1
-
-        return first_arg * coeff_swimm_2 * self.weight
+        return first_arg * self.COEF_SWIMM_2 * self.weight
 
 
 def read_package(workout_type: str, data: list) -> Union[Training, str]:
