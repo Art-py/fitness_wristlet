@@ -1,4 +1,4 @@
-from typing import Union, Dict, List
+from typing import Union, Dict, Type
 
 class InfoMessage:
     """Информационное сообщение о тренировке."""
@@ -139,18 +139,14 @@ class Swimming(Training):
 def read_package(workout_type: str, data: list) -> Union[Training, str]:
     """Прочитать данные полученные от датчиков."""
 
-    CustomDict = Dict[str, Union[Swimming, Running, SportsWalking]]
+    CustomDict = Dict[str, Type[Union[Swimming, Running, SportsWalking]]]
 
     workout_dict: CustomDict = {'SWM': Swimming,
                                 'RUN': Running,
                                 'WLK': SportsWalking}
 
     try:
-
-        obj = workout_dict[workout_type]
-        obj_ret = obj(*data)
-
-        return obj_ret
+        return workout_dict[workout_type](*data)
 
     except KeyError:
         return 'Не найден тип тренировки!'
@@ -159,7 +155,7 @@ def read_package(workout_type: str, data: list) -> Union[Training, str]:
 def main(training: Union[Training, str]) -> None:
     """Главная функция."""
 
-    if type(training) == type('str'):
+    if isinstance(training, str):
         print(training)
     else:
         info: InfoMessage = training.show_training_info()
