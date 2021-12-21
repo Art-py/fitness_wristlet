@@ -101,10 +101,11 @@ class SportsWalking(Training):
         coeff_calories_1 = 0.035
         coeff_calories_2 = 0.029
 
-        return (coeff_calories_1 * self.weight
-                + (self.get_mean_speed() ** 2 // self.height)
-                * coeff_calories_2 * self.weight) \
-                * self.duration * self.HOUR_IN_MINUTE
+        return (coeff_calories_1
+                * self.weight
+                + (self.get_mean_speed() ** 2
+                // self.height) * coeff_calories_2
+                * self.weight) * self.duration * self.HOUR_IN_MINUTE
 
 
 class Swimming(Training):
