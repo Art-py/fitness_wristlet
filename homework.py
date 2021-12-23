@@ -1,21 +1,16 @@
 from typing import Dict, Type
+from dataclasses import dataclass
 
 
+@dataclass()
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float
-                 ) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
 
     def get_message(self) -> str:
         """Метод возвращает информацию о тренировке."""
@@ -65,7 +60,6 @@ class Training:
                               self.get_distance(),
                               self.get_mean_speed(),
                               self.get_spent_calories())
-
         return ret_obj
 
 
@@ -76,10 +70,8 @@ class Running(Training):
     COEF_RUN_2: int = 20
 
     def get_spent_calories(self) -> float:
-
         first_arg = self.COEF_RUN_1 * self.get_mean_speed() - self.COEF_RUN_2
         second_arg = (self.duration * self.HOUR_IN_MINUTE)
-
         return first_arg * self.weight / self.M_IN_KM * second_arg
 
 
@@ -100,10 +92,8 @@ class SportsWalking(Training):
         self.height: float = height
 
     def get_spent_calories(self) -> float:
-
         avr_speed_squared = self.get_mean_speed() ** 2 // self.height
         work_time_in_min = self.duration * self.HOUR_IN_MINUTE
-
         return ((self.COEF_CALORIES_1 * self.weight + avr_speed_squared
                 * self.COEF_CALORIES_2 * self.weight) * work_time_in_min)
 
@@ -131,9 +121,7 @@ class Swimming(Training):
         return first_arg / self.M_IN_KM / self.duration
 
     def get_spent_calories(self) -> float:
-
         first_arg = self.get_mean_speed() + self.COEF_SWIMM_1
-
         return first_arg * self.COEF_SWIMM_2 * self.weight
 
 
@@ -141,11 +129,9 @@ def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
 
     custom_dict = Dict[str, Type[Training]]
-
     workout_dict: custom_dict = {'SWM': Swimming,
                                  'RUN': Running,
                                  'WLK': SportsWalking}
-
     return workout_dict[workout_type](*data)
 
 
@@ -156,12 +142,11 @@ def main(training: Training) -> None:
 
 
 if __name__ == '__main__':
-    packages = [
-        ('SWM', [720, 1, 80, 25, 40]),
-        ('RUN', [15000, 1, 75]),
-        ('WLK', [9000, 1, 75, 180]),
-        ('TEST', [0, 0, 0, 0])
-    ]
+    packages = [('SWM', [720, 1, 80, 25, 40]),
+                ('RUN', [15000, 1, 75]),
+                ('WLK', [9000, 1, 75, 180])]
+                # ('ERROR', [0, 0, 0, 0])
+
 
     for workout_type, data in packages:
         training = read_package(workout_type, data)
