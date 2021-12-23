@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Type, Union
 from dataclasses import dataclass
 
 
@@ -132,21 +132,28 @@ def read_package(workout_type: str, data: list) -> Training:
     workout_dict: custom_dict = {'SWM': Swimming,
                                  'RUN': Running,
                                  'WLK': SportsWalking}
-    return workout_dict[workout_type](*data)
+    try:
+        ret_obj = workout_dict[workout_type](*data)
+    except KeyError:
+        ret_obj = 'Unknown type of workout'
+    return ret_obj
 
 
-def main(training: Training) -> None:
+def main(training: Union[Training, str]) -> None:
     """Главная функция."""
-    info: InfoMessage = training.show_training_info()
-    print(InfoMessage.get_message(info))
+
+    if isinstance(training, Training):
+        info: InfoMessage = training.show_training_info()
+        print(InfoMessage.get_message(info))
+    else:
+        print(training)
 
 
 if __name__ == '__main__':
     packages = [('SWM', [720, 1, 80, 25, 40]),
                 ('RUN', [15000, 1, 75]),
-                ('WLK', [9000, 1, 75, 180])]
-                # ('ERROR', [0, 0, 0, 0])
-
+                ('WLK', [9000, 1, 75, 180]),
+                ('ERR', [0, 0, 0, 0])]
 
     for workout_type, data in packages:
         training = read_package(workout_type, data)
